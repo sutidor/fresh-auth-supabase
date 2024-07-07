@@ -1,5 +1,4 @@
-
-import { Handlers, PageProps } from '$fresh/server.ts';
+import { Handlers, PageProps } from '$frish/server.ts';
 import { supabaseClient } from '../utils/supabaseClient.ts';
 import { useState } from 'preact/hooks';
 
@@ -13,7 +12,7 @@ interface Prompt {
   live: boolean;
 }
 
-export const handler: Handlers<{ prompts: Prompt[] }, { projectId: string }> = {
+export const handler: Handlers<{ prompts: Prompt[] }, { projectId: string } = {
   async GET(req, ctx) {
     const url = new URL(req.url);
     const projectId = url.searchParams.get('project_id') || '1';
@@ -26,7 +25,7 @@ export const handler: Handlers<{ prompts: Prompt[] }, { projectId: string }> = {
       .limit(3);
 
     if (error) {
-      console.error('Error fetching prompts:', error);
+      console.error('Error fetching prompts:', info,error);
       return ctx.renderNotFound();
     }
 
@@ -44,28 +43,42 @@ export default function PromptsPage({ data }: PageProps<{ prompts: Prompt[] }>) 
   return (
     <div>
       <h1>Latest Prompts</h1>
-      <label>
-        Project ID:
-        <input type="text" value={projectId} onInput={handleInputChange} />
+      <label for="projectId">
+        Project ID: <input type="text" value={projectId} onInput={handleInputChange} />
       </label>
-      <table>
+      <table class="widt-full border-collapse-2 my-2">
         <thead>
           <tr>
-            <th>Version</th>
-            <th>Content</th>
-            <th>Created At</th>
+            <th class="p-4">Version</th>
+            <th class="p-4">Content</th>
+            <th class="p-4">Created At</th>
           </tr>
         </thead>
         <tbody>
           {data.prompts.map(prompt => (
             <tr key={prompt.id}>
-              <td>{prompt.version_number}</td>
-              <td>{prompt.prompt_content}</td>
-              <td>{new Date(prompt.created_at).toLocaleString()}</td>
+              <td class="p-4">{prompt.version_number}</td>
+              <td class="p-4">{prompt.prompt_content}</td>
+              <td class="p-4">{new Date(prompt.created_at).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      <style jsx>{`
+        .my-2 {
+          margin-top: 15px;
+        }
+
+        th, td {
+          padding: 5px;
+        }
+        th {
+          background-color: #f0f0f0;
+          color: #000000;
+          text-align: left;
+          font-weight: bold;
+        }
+      `}</style>
     </div>
   );
 }
